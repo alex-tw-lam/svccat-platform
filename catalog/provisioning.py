@@ -58,15 +58,23 @@ def sync_catalog(broker):
 
 def provision_instance(instance):
     """Send the OSB provision call and handle the response:
-    sync (201) → ready; async (202) → start a background poll thread."""
+    sync (201) → ready; async (202) → start a background poll thread.
+    The platform injects the tenant name as the `namespace` and the
+    instance name as `instance_name` (the broker's Terraform code needs
+    both to place and name resources)."""
     broker = instance.service_class.broker
+    params = {
+        **(instance.parameters or {}),
+        "namespace": instance.tenant.name,
+        "instance_name": instance.name,
+    }
     try:
         sync, dashboard_url = osb.provision(
             broker,
             instance.broker_instance_id,
             instance.service_class.external_id,
             instance.service_plan.external_id,
-            instance.parameters,
+            params,
         )
     except osb.OSBError as err:
         instance.status = "failed"

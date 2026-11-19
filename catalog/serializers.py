@@ -8,9 +8,11 @@ from catalog.models import Broker, ServiceBinding, ServiceClass, ServiceInstance
 
 
 class BrokerSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)  # accepted on input, never returned
+
     class Meta:
         model = Broker
-        fields = ["id", "name", "url", "username", "created_at"]
+        fields = ["id", "name", "url", "username", "password", "created_at"]
         read_only_fields = ["id", "created_at"]
 
 

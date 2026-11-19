@@ -51,12 +51,14 @@ def provision(broker, instance_id, service_id, plan_id, parameters, context=None
         "plan_id": str(plan_id),
         "parameters": parameters or {},
         "context": context or {},
+        "accepts_incomplete": True,  # the platform handles async (202 + poll)
     }
     resp = requests.put(
         f"{broker.url}/v2/service_instances/{instance_id}",
         auth=_auth(broker),
         headers=_headers(broker),
         json=body,
+        params={"accepts_incomplete": "true"},
         timeout=60,
     )
     if resp.status_code not in (200, 201, 202):
@@ -95,7 +97,7 @@ def deprovision(broker, instance_id, service_id, plan_id):
         f"{broker.url}/v2/service_instances/{instance_id}",
         auth=_auth(broker),
         headers=_headers(broker),
-        params={"service_id": str(service_id), "plan_id": str(plan_id)},
+        params={"service_id": str(service_id), "plan_id": str(plan_id), "accepts_incomplete": "true"},
         timeout=60,
     )
     if resp.status_code not in (200, 202, 410):
@@ -121,6 +123,7 @@ def bind(broker, instance_id, binding_id, service_id, plan_id, parameters=None, 
         auth=_auth(broker),
         headers=_headers(broker),
         json=body,
+        params={"accepts_incomplete": "true"},
         timeout=60,
     )
     if resp.status_code not in (200, 201, 202):
