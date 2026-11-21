@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "rest_framework",
+    "django_filters",
     "rest_framework.authtoken",
     "catalog",
 ]
@@ -51,6 +52,9 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
+    ],
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
     ],
     # pagination off: the platform's datasets are small (tens, not
     # thousands); if it grows, turn on PageNumberPagination
